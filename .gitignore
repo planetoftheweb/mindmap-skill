@@ -1,0 +1,9 @@
+# macOS files
+.DS_Store
+
+# Font files (included in release ZIP only)
+fonts/
+
+# Temporary files
+*.tmp
+*~
