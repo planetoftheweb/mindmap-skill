@@ -139,18 +139,28 @@ Edit the React component inside `index.jsx`:
 - Check browser console for React errors
 - Try refreshing the page
 
+## Releases
+
+The latest release is available at [GitHub Releases](https://github.com/planetoftheweb/mindmap-skill/releases).
+
+Download `mindmap-skill.zip` from the latest release to get:
+- All source files (HTML, JSX, CSS, OPML, XML)
+- Documentation (README, SKILL.md, RELEASE_NOTES)
+- Font assets (Hubot Sans TTF + license)
+
+See `RELEASE_PROCESS.md` for information about creating new releases.
+
 ## Submitting as a Claude Skill
 
-When ready to submit as a Claude skill:
-
-```bash
-# Create a zip with all files
-zip -r mindmap-skill.zip * -x "*.DS_Store" -x ".claude/*"
-```
-
-Submit the zip file with:
+The `mindmap-skill.zip` file is ready for submission as a Claude skill. It contains:
 - SKILL.md (required - Claude instructions)
-- All other files in this directory
+- All source and asset files
+- Complete documentation
+
+To create a new release ZIP:
+```bash
+zip -r mindmap-skill.zip fonts/ *.html *.jsx *.css *.opml *.xml *.txt *.md -x "*.DS_Store"
+```
 
 ## License
 
