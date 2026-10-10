@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Claude Skills Overview</title>
+    <dateCreated>Mon, 20 Oct 2025 00:00:00 GMT</dateCreated>
+  </head>
+  <body>
+    <outline text="Claude Skills" _note="Skills can stack together so Claude can pull in more than one at a time. Claude figures out which skills it needs, runs only the ones that help, and keeps the rest out of the way.">
+      <outline text="Composable" _note="You can ask Claude to use several skills in one go. It automatically lines them up, mixes their outputs, and only fires the ones it thinks are required to finish the job."/>
+      <outline text="Portable" _note="Every skill uses the same packaging, so once you build it you can drop it into Claude.ai, the desktop app, Claude Code, or even call it from the API without rebuilding."/>
+      <outline text="Efficient" _note="Claude keeps things lightweight—skills stay idle until they are needed, then load just in time and unload again so the conversation stays fast."/>
+      <outline text="Powerful" _note="Skills can bundle complex logic or executable code, letting Claude lean on reliable scripts whenever the task is better handled with traditional programming."/>
+    </outline>
+  </body>
+</opml>

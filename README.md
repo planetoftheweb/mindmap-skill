@@ -76,6 +76,10 @@ Refresh your browser to see changes instantly!
 ### OPML Attributes
 - `text` - Node label (keep short, 1-3 words)
 - `_note` - Detailed description (shows in popup)
+- Prefix `_note` with `Availability:` when you want that text surfaced in a highlighted banner at the top of the popover.
+- `_variant` (optional) - Set to `alert` to render a node as a filled highlight. Pair with `_color` to choose the hue—otherwise it defaults to the branch color.
+- `_color` (optional) - Provide a custom hex value (with or without `#`) to override the palette color for that node and its descendants.
+- Child `<outline>` elements become detail cards in the popover (their `text` becomes the section title and `_note` the description) and are useful for structured bullet points.
 
 ### Color Palette
 - `name` - Color identifier

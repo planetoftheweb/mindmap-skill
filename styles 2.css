@@ -1,0 +1,249 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Hubot Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  background-color: #ecfdf5; /* emerald-50 */
+  color: #0f172a;
+}
+
+.mindmap-root {
+  width: 100%;
+  height: 100vh;
+  background-color: #ecfdf5;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-state {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ecfdf5;
+}
+
+.loading-state__text {
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+.canvas-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.stage {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-origin: center center;
+}
+
+.connection-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.node-wrapper {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: move;
+  user-select: none;
+}
+
+.node-wrapper--static {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.node-wrapper--dragging {
+  transition: none;
+}
+
+.node-inner {
+  position: relative;
+}
+
+.node-bubble {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  transform-origin: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
+}
+
+.node-bubble--center {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.node-bubble--selected {
+  box-shadow: 0 0 0 4px var(--selection-color, rgba(15, 23, 42, 0.35)),
+    0 24px 45px rgba(15, 23, 42, 0.22);
+}
+
+.node-bubble--hovered:not(.node-bubble--selected) {
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+}
+
+.node-action {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+  border: 3px solid #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.node-action--toggle {
+  top: -12px;
+  right: -12px;
+}
+
+.node-action--reset {
+  top: -12px;
+  left: -12px;
+}
+
+.node-popover {
+  position: absolute;
+  width: 20rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.18);
+  padding: 1.2rem 1.5rem;
+  border: 1px solid #e5e7eb;
+  z-index: 30;
+}
+
+.node-popover--top {
+  top: 100%;
+  margin-top: 0.85rem;
+}
+
+.node-popover--bottom {
+  bottom: 100%;
+  margin-bottom: 0.85rem;
+}
+
+.node-popover--left {
+  left: 0;
+}
+
+.node-popover--right {
+  right: 0;
+}
+
+.node-popover__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.node-popover__description {
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 0.7rem;
+  max-height: 12rem;
+  overflow-y: hidden;
+  padding-right: 0.35rem;
+  scrollbar-width: thin;
+}
+
+.node-popover__availability {
+  border: 1px solid transparent;
+  border-radius: 0.85rem;
+  padding: 0.9rem 1rem;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: transform 0.2s ease;
+}
+
+.node-popover__availability-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0f172a;
+}
+
+.node-popover__availability-text {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: inherit;
+}
+
+.node-popover__description:hover {
+  overflow-y: auto;
+}
+
+.node-popover__description::-webkit-scrollbar {
+  width: 6px;
+}
+
+.node-popover__description::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.7);
+  border-radius: 9999px;
+}
+
+.node-popover__children {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.child-entry {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  background-color: rgba(148, 163, 184, 0.12);
+  border-left: 4px solid rgba(148, 163, 184, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.child-entry:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+}
+
+.child-entry__title {
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.child-entry__detail {
+  color: #374151;
+  font-size: 0.82rem;
+  margin-top: 0.35rem;
+  line-height: 1.5;
+}
+
+.hidden {
+  display: none;
+}

@@ -73,6 +73,9 @@ Use this skill when someone needs to review, adjust, or create an interactive mi
    - Create the hierarchical structure with roughly 5-8 main branches and 3-6 children each
    - Keep node labels short (1-3 words) and use detailed notes for extended descriptions
    - Maintain balanced depth across branches
+   - Preserve optional styling attributes such as `_variant="alert"` or `_color` so highlighted or custom-colored nodes (for example, a highlighted caution callout) render correctly
+   - When a plan or node needs a featured callout, begin its `_note` with `Availability:` to populate the banner in the popover.
+   - Use child `<outline>` elements to break rich copy into structured sections (child `text` becomes the heading and `_note` the body content).
 
 4. **Apply color palette**
    - Use the existing color palette from `palette.xml` unless the user explicitly requests color changes

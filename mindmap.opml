@@ -1,48 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <opml version="2.0">
   <head>
-    <title>Creating Claude Skills</title>
+    <title>Claude Skills Overview</title>
     <dateCreated>Mon, 20 Oct 2025 00:00:00 GMT</dateCreated>
   </head>
   <body>
-    <outline text="Claude Skills" _note="A framework for extending Claude's capabilities through specialized instructions and tools">
-      <outline text="Concept" _note="What a Claude Skill is and why it matters.">
-        <outline text="Specialized instructions" _note="Break down the task into ordered steps, list fallback options, and specify clarifying questions Claude must ask to stay aligned with the requester"/>
-        <outline text="Best practices" _note="Summarize field-tested patterns, tone guidelines, formatting rules, and validation checks that keep the output polished"/>
-        <outline text="Tool integration" _note="Detail which Python modules, shell commands, or external APIs are allowed, including invocation syntax and safety constraints"/>
-      </outline>
-      <outline text="Structure" _note="What's inside a Claude Skill folder.">
-        <outline text="SKILL.md" _note="Frontmatter enumerates metadata, inputs, outputs, and allowed tooling. Narrative sections then define objectives, context-gathering prompts, the execution flow, review checklists, and escalation rules so Claude knows precisely how to deliver the task."/>
-        <outline text="Supporting files" _note="Stores every asset referenced by SKILL.md—sample inputs, prompt fragments, lookup tables, helper scripts—and keeps them in predictable paths so Claude can load them directly from /mnt/skills."/>
-        <outline text="LICENSE.txt" _note="Spells out redistribution rights, attribution wording, data-handling rules, and any limits on commercial or external sharing of the skill bundle."/>
-      </outline>
-      <outline text="Creation Process" _note="How to craft and package a new skill.">
-        <outline text="Identify task" _note="Select a repeatable workflow where expert judgment, brand voice, or compliance rules demand consistent handling from Claude"/>
-        <outline text="Test approaches" _note="Experiment with prompts, tool calls, and datasets—logging successes and failures—until you settle on instructions that deliver reliable results"/>
-        <outline text="Document patterns" _note="Capture the refined steps, decision points, acceptance criteria, and edge cases so the process survives handoffs and audits"/>
-        <outline text="Package resources" _note="Assemble SKILL.md, required assets, and metadata into the folder, running a dry run to ensure Claude can access everything without manual fixes"/>
-      </outline>
-      <outline text="Usage" _note="How Claude loads and follows a skill.">
-        <outline text="Automatic loading" _note="Once mounted, skill folders appear under /mnt/skills, letting Claude read instructions and fetch referenced assets on demand"/>
-        <outline text="Claude reads first" _note="Claude reviews SKILL.md before responding, absorbing objectives, guardrails, and escalation guidance so replies stay within scope"/>
-        <outline text="Apply knowledge" _note="Throughout the chat, Claude cites the documented flow, runs only approved tools, and cross-checks outputs against the embedded quality checklist"/>
-      </outline>
-      <outline text="Types" _note="The kinds of skills available to Claude.">
-        <outline text="Public" _note="Anthropic-maintained skills that ship with Claude—for example, document conversion or spreadsheet assistants that everyone can access by default"/>
-        <outline text="Example" _note="Reference projects published by Anthropic to demonstrate patterns; you can study or customize them to accelerate your own builds"/>
-        <outline text="User" _note="Private or team-specific skills you author, embedding proprietary workflows, data policies, or integrations unique to your organization"/>
-      </outline>
-      <outline text="Benefits" _note="Why teams codify workflows into skills.">
-        <outline text="Consistent quality" _note="Codify tone, structure, and acceptance criteria so every run mirrors expert output without constant supervision"/>
-        <outline text="Time savings" _note="Reduce prompt tinkering and onboarding effort by giving Claude the winning playbook upfront"/>
-        <outline text="Complex tasks" _note="Enable Claude to manage multi-stage projects—research, drafting, QA—while preserving context and guardrails"/>
-      </outline>
-      <outline text="Resources" _note="Where to find docs, support, and peers.">
-        <outline text="Claude Documentation" _note="Offers deep-dive tutorials, launch checklists, and example repositories straight from Anthropic's documentation hub"/>
-        <outline text="Support Center" _note="Provides troubleshooting workflows, known-issue trackers, and contact channels for production help"/>
-        <outline text="API Reference" _note="Details REST endpoints and payloads for uploading, listing, and enabling skills programmatically"/>
-        <outline text="Community" _note="Connects builders through forums and events where they swap skill blueprints and real-world performance notes"/>
-      </outline>
+    <outline text="Claude Skills" _note="Skills can stack together so Claude can pull in more than one at a time. Claude figures out which skills it needs, runs only the ones that help, and keeps the rest out of the way.">
+      <outline text="Composable" _note="You can ask Claude to use several skills in one go. It automatically lines them up, mixes their outputs, and only fires the ones it thinks are required to finish the job."/>
+      <outline text="Portable" _note="Every skill uses the same packaging, so once you build it you can drop it into Claude.ai, the desktop app, Claude Code, or even call it from the API without rebuilding."/>
+      <outline text="Efficient" _note="Claude keeps things lightweight—skills stay idle until they are needed, then load just in time and unload again so the conversation stays fast."/>
+      <outline text="Powerful" _note="Skills can bundle complex logic or executable code, letting Claude lean on reliable scripts whenever the task is better handled with traditional programming."/>
     </outline>
   </body>
 </opml>

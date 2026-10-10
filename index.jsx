@@ -1,5 +1,22 @@
 const { useState, useRef, useEffect } = React;
 
+const hexToRgb = (hex) => {
+  if (!hex) return null;
+  const normalized = hex.replace('#', '');
+  if (normalized.length !== 6) return null;
+  const r = parseInt(normalized.slice(0, 2), 16);
+  const g = parseInt(normalized.slice(2, 4), 16);
+  const b = parseInt(normalized.slice(4, 6), 16);
+  if ([r, g, b].some((value) => Number.isNaN(value))) return null;
+  return { r, g, b };
+};
+
+const hexToRgba = (hex, alpha) => {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return null;
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+};
+
 const MindMapGenerator = () => {
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNode, setHoveredNode] = useState(null);
@@ -71,6 +88,10 @@ const MindMapGenerator = () => {
         const angleStep = (2 * Math.PI) / childOutlines.length;
         const clampPosition = (value) => Math.max(6, Math.min(94, value));
         const distanceFromParent = (level) => 16 + Math.min(level, 4) * 6;
+        const normalizeColor = (value) => {
+          if (!value) return null;
+          return value.startsWith('#') ? value : `#${value}`;
+        };
 
         // Build nodes object
         const newNodes = {
@@ -81,7 +102,8 @@ const MindMapGenerator = () => {
             y: centerPos.y,
             color: '#000000',
             description: rootNote,
-            hasChildren: childOutlines.length > 0
+            hasChildren: childOutlines.length > 0,
+            variant: 'center'
           }
         };
 
@@ -93,6 +115,10 @@ const MindMapGenerator = () => {
           const nodeId = outline.getAttribute('text').toLowerCase().replace(/\s+/g, '-') + '-' + Math.random().toString(36).substr(2, 9);
           const childOutlines = Array.from(outline.children);
           const hasChildren = childOutlines.length > 0;
+          const variant = outline.getAttribute('_variant') || 'default';
+          const overrideColorAttr = outline.getAttribute('_color');
+          const overrideColor = normalizeColor(overrideColorAttr) || (variant === 'alert' ? '#dc2626' : null);
+          const effectiveColor = overrideColor || nodeColor || '#042940';
 
           let x, y;
           if (level === 1) {
@@ -124,12 +150,13 @@ const MindMapGenerator = () => {
             label: outline.getAttribute('text'),
             x: clampedX,
             y: clampedY,
-            color: nodeColor, // Use the color passed from parent branch
+            color: effectiveColor,
             description: outline.getAttribute('_note') || '',
             children: children.length > 0 ? children : undefined,
             parentId,
             level,
-            hasChildren
+            hasChildren,
+            variant
           };
 
           newConnections.push({ from: parentId, to: nodeId });
@@ -145,7 +172,7 @@ const MindMapGenerator = () => {
             childOutlines.forEach((childOutline, idx) => {
               const childAngle = startAngle + childAngleStep * (idx + 0.5);
               // Give children more angular space to spread out, inherit parent color
-              processNode(childOutline, nodeId, level + 1, childAngle, childAngleStep, nodeColor);
+              processNode(childOutline, nodeId, level + 1, childAngle, childAngleStep, effectiveColor);
             });
           }
         };
@@ -427,17 +454,58 @@ const MindMapGenerator = () => {
 
               const wrapperClass = `node-wrapper ${isBeingDragged ? 'node-wrapper--dragging' : 'node-wrapper--static'}`;
               const bubbleScale = selectedNode === node.id ? 1.15 : hoveredNode === node.id ? 1.1 : 1;
+              const isCenterNode = node.id === 'center';
+              const isAlertNode = node.variant === 'alert';
+              const isFilledNode = isCenterNode || isAlertNode;
               const bubbleClass = [
                 'node-bubble',
-                node.id === 'center' ? 'node-bubble--center' : '',
+                isCenterNode ? 'node-bubble--center' : '',
+                isAlertNode ? 'node-bubble--alert' : '',
                 selectedNode === node.id ? 'node-bubble--selected' : '',
                 hoveredNode === node.id && selectedNode !== node.id ? 'node-bubble--hovered' : ''
               ].filter(Boolean).join(' ');
-              const bubbleShadow = selectedNode === node.id
+              let bubbleShadow = selectedNode === node.id
                 ? `0 0 0 4px ${node.color}55, 0 24px 45px rgba(15, 23, 42, 0.22)`
                 : hoveredNode === node.id
                   ? '0 20px 40px rgba(15, 23, 42, 0.18)'
                   : '0 12px 30px rgba(15, 23, 42, 0.15)';
+
+              if (isAlertNode) {
+                bubbleShadow = selectedNode === node.id
+                  ? `0 0 0 4px ${node.color}55, 0 28px 50px rgba(220, 38, 38, 0.45)`
+                  : hoveredNode === node.id
+                    ? '0 24px 45px rgba(220, 38, 38, 0.35)'
+                    : '0 16px 35px rgba(220, 38, 38, 0.25)';
+              }
+
+              const bubbleStyles = {
+                backgroundColor: isFilledNode ? node.color : '#ffffff',
+                color: isFilledNode ? '#ffffff' : node.color,
+                border: isFilledNode ? 'none' : `3px solid ${node.color}`,
+                fontSize: isCenterNode ? '1.25rem' : '0.95rem',
+                fontWeight: isFilledNode ? '700' : '600',
+                transform: `scale(${bubbleScale})`,
+                boxShadow: bubbleShadow,
+                ...(selectedNode === node.id && { '--selection-color': node.color })
+              };
+              const availabilityPrefix = 'availability:';
+              let availabilityText = null;
+              let secondaryDescription = null;
+              if (node.description) {
+                const trimmedDescription = node.description.trim();
+                if (trimmedDescription.toLowerCase().startsWith(availabilityPrefix)) {
+                  availabilityText = trimmedDescription.slice(availabilityPrefix.length).trim();
+                } else {
+                  secondaryDescription = trimmedDescription;
+                }
+              }
+              const availabilityBackground = hexToRgba(node.color, isAlertNode ? 0.16 : 0.12) || 'rgba(15, 23, 42, 0.08)';
+              const availabilityBorderColor = hexToRgba(node.color, isAlertNode ? 0.45 : 0.25) || 'rgba(15, 23, 42, 0.15)';
+              const availabilityLabelColor = node.color || '#0f172a';
+              const availabilityTextColor = isAlertNode ? '#7f1d1d' : '#0f172a';
+              const childrenDividerColor = hexToRgba(node.color, isAlertNode ? 0.4 : 0.2) || node.color || '#e5e7eb';
+              const childEntryBackground = hexToRgba(node.color, isAlertNode ? 0.18 : 0.1) || 'rgba(148, 163, 184, 0.12)';
+              const childDetailColor = isAlertNode ? '#7f1d1d' : '#374151';
 
               return (
                 <div
@@ -457,16 +525,7 @@ const MindMapGenerator = () => {
                   <div className="node-inner">
                     <div
                       className={bubbleClass}
-                      style={{
-                        backgroundColor: node.id === 'center' ? node.color : '#ffffff',
-                        color: node.id === 'center' ? '#ffffff' : node.color,
-                        border: node.id === 'center' ? 'none' : `3px solid ${node.color}`,
-                        fontSize: node.id === 'center' ? '1.25rem' : '0.95rem',
-                        fontWeight: node.id === 'center' ? '700' : '600',
-                        transform: `scale(${bubbleScale})`,
-                        boxShadow: bubbleShadow,
-                        ...(selectedNode === node.id && { '--selection-color': node.color })
-                      }}
+                      style={bubbleStyles}
                     >
                       {node.label}
                     </div>
@@ -477,7 +536,7 @@ const MindMapGenerator = () => {
                           className="node-action node-action--toggle"
                           style={{
                             backgroundColor: node.color,
-                            color: node.id === 'center' ? '#ffffff' : (isLightColor(node.color) ? '#000000' : '#ffffff'),
+                            color: isFilledNode ? '#ffffff' : (isLightColor(node.color) ? '#000000' : '#ffffff'),
                           }}
                           onClick={(e) => toggleNodeExpansion(node.id, e)}
                           onMouseDown={(e) => e.stopPropagation()}
@@ -491,7 +550,7 @@ const MindMapGenerator = () => {
                             className="node-action node-action--reset"
                             style={{
                               backgroundColor: node.color,
-                              color: node.id === 'center' ? '#ffffff' : (isLightColor(node.color) ? '#000000' : '#ffffff'),
+                              color: isFilledNode ? '#ffffff' : (isLightColor(node.color) ? '#000000' : '#ffffff'),
                             }}
                             onClick={(e) => unhideAllChildren(node.id, e)}
                             onMouseDown={(e) => e.stopPropagation()}
@@ -509,16 +568,43 @@ const MindMapGenerator = () => {
                       className={`node-popover ${isBottomHalf ? 'node-popover--bottom' : 'node-popover--top'} ${isRightHalf ? 'node-popover--right' : 'node-popover--left'}`}
                     >
                       <h3 className="node-popover__title" style={{ color: node.color }}>{node.label}</h3>
-                      {node.description && (
-                        <p className="node-popover__description">{node.description}</p>
+                      {availabilityText && (
+                        <div
+                          className="node-popover__availability"
+                          style={{
+                            backgroundColor: availabilityBackground,
+                            borderColor: availabilityBorderColor,
+                            color: availabilityTextColor
+                          }}
+                        >
+                          <span
+                            className="node-popover__availability-label"
+                            style={{ color: availabilityLabelColor }}
+                          >
+                            Availability
+                          </span>
+                          <p className="node-popover__availability-text">{availabilityText}</p>
+                        </div>
+                      )}
+
+                      {secondaryDescription && (
+                        <p className="node-popover__description">{secondaryDescription}</p>
                       )}
 
                       {node.children && (
-                        <div className="node-popover__children" style={{ borderTop: `2px solid ${node.color}` }}>
+                        <div className="node-popover__children" style={{ borderTop: `2px solid ${childrenDividerColor}` }}>
                           {node.children.map((child, i) => (
-                            <div key={i} className="child-entry">
+                            <div
+                              key={i}
+                              className="child-entry"
+                              style={{
+                                borderLeft: `4px solid ${childrenDividerColor}`,
+                                backgroundColor: childEntryBackground,
+                                boxShadow: '0 12px 24px rgba(15, 23, 42, 0.08)'
+                              }}
+                            >
                               <span className="child-entry__title" style={{ color: node.color }}>{child.label}</span>
-                              <span className="child-entry__detail">{child.detail}</span>
+                              <span className="child-entry__detail" style={{ color: childDetailColor }}>{child.detail}</span>
                             </div>
                           ))}
                         </div>
